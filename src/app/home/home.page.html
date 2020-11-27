@@ -1,20 +1,60 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      {{title}}
     </ion-title>
+    <ion-button slot="end">
+      <span class="taskNb">
+        {{ (tasks | tasksFilter : false).length}}
+      </span>
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <div *ngIf="tasks.length === 0 || (tasks | tasksFilter : false).length > 0" >
+    <h5>Aucune tâche pour le moment</h5>
   </div>
+
+  <ion-item>
+    <ion-input [(ngModel)]="task.name" (ionBlur)="addTask()" (keypress)="enterDetection($event.code)" type="text"
+      placeholder="Nouvelle Tâches"></ion-input>
+  </ion-item>
+
+
+  <br>
+  <ion-list>
+    <ion-item-sliding *ngFor="let task of tasks | tasksFilter : false">
+
+      <ion-item>
+        <ion-label [class.done]="task.status">{{ task.name }}</ion-label>
+        <ion-checkbox [(ngModel)]="task.status" (ionChange)="saveTasks()" slot="start"></ion-checkbox>
+
+      </ion-item>
+
+      <ion-item-options side="end" (ionSwipe)="deleteTask(task)">
+        <ion-item-option color="danger" (click)="deleteTask(task)" expandable>DELETE</ion-item-option>
+      </ion-item-options>
+
+    </ion-item-sliding>
+
+    <h5 *ngIf="tasks.length === 0 || (tasks | tasksFilter : true).length > 0">Tâches terminées.</h5>
+
+    <ion-item-sliding *ngFor="let task of tasks | tasksFilter : true">
+
+      <ion-item>
+        <ion-label [class.done]="task.status">{{ task.name }}</ion-label>
+        <ion-checkbox [(ngModel)]="task.status" (ionChange)="saveTasks()" slot="start"></ion-checkbox>
+
+      </ion-item>
+
+      <ion-item-options side="end" (ionSwipe)="deleteTask(task)">
+        <ion-item-option color="danger" (click)="deleteTask(task)" expandable>DELETE</ion-item-option>
+      </ion-item-options>
+
+    </ion-item-sliding>
+
+  </ion-list>
+
 </ion-content>
